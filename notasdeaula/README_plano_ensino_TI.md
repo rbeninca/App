@@ -43,3 +43,6 @@ componentes
 * **Hello World Internacionalizado**: Criação de um aplicativo que exibe "Hello World" em diferentes idiomas, utilizando recursos de internacionalização.
 * **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
 * **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela.
+
+
+##A
