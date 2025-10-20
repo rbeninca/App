@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView =findViewById(R.id.listView); //Associando view a variavel local listView
         planetaController = new PlanetaController();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, planetaController.getNomePLanetas());
+        PlanetaAdapter adapter = new PlanetaAdapter(this,
+                R.layout.item_lista,
+                planetaController.getPlaneta());
         listView.setAdapter(adapter);//Definindo adapter para a listView
 
     }
