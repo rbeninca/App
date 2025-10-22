@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+ //   https://github.com/rbeninca/App
 
 public class MainActivity extends AppCompatActivity {
     PackageManager pm;
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         //Recupera  gerenciador de pacotes
         pm=getPackageManager();
 
-
         ArrayList<ApplicationInfo> apps =new ArrayList<>();// = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         Intent iquery = new Intent(Intent.ACTION_MAIN, null);
         iquery.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -42,6 +42,18 @@ public class MainActivity extends AppCompatActivity {
         AppAdapter adapter = new AppAdapter(this, R.layout.app, apps);
 
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    ApplicationInfo appInfo = (ApplicationInfo) parent.getItemAtPosition(position);
+                    Intent launchIntent = pm.getLaunchIntentForPackage(appInfo.packageName);
+                    if (launchIntent != null) {
+                        startActivity(launchIntent);
+                    } else {
+                        Log.e("MainActivity", "Não foi possível iniciar o aplicativo: " + appInfo.packageName);
+                    }
+                }
+        );
 
     }
 }
