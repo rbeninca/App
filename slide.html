@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CameraX em Java - Guia Completo</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ecf5ec 0%, #656665 100%);
+      color: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 20px 40px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .slide-wrapper {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      animation: fadeIn 0.5s ease-in;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      color: #333;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      min-height: 500px;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      color: #020618;
+      font-size: 36px;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    h2 {
+      color: #544f58;
+      font-size: 24px;
+      margin: 25px 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      color: #5a67d8;
+      font-size: 20px;
+      margin: 20px 0 10px;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background: #0e8561;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      font-weight: bold;
+    }
+
+    ul {
+      margin-left: 20px;
+      line-height: 2;
+    }
+
+    li {
+      margin: 10px 0;
+      color: #444;
+    }
+
+    .highlight {
+      background: linear-gradient(120deg, #ffd54f 0%, #ff9800 100%);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 5px;
+    }
+
+    pre[class*="language-"] {
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-size: 14px;
+      max-height: 400px;
+      overflow: auto;
+    }
+
+    code[class*="language-"] {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    .step-box {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      color: #856404;
+    }
+
+    .success-box {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      color: #155724;
+    }
+
+    .info-box {
+      background: #d1ecf1;
+      border-left: 4px solid #17a2b8;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      color: #0c5460;
+    }
+
+    .checklist {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .checklist li:before {
+      content: "✓ ";
+      color: #28a745;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .flow-diagram {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .flow-item {
+      background: white;
+      border: 2px solid #30da20;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      min-width: 150px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .flow-arrow {
+      font-size: 24px;
+      color: #eaecf3;
+    }
+
+    .navigation {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      background: linear-gradient(135deg, #266d0b 0%, #dbf3db 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-counter {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .filename {
+      background: #2d3748;
+      color: #81e6d9;
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: -10px;
+    }
+
+    .code-wrapper {
+      position: relative;
+    }
+
+    ol {
+      margin-left: 20px;
+      line-height: 2;
+    }
+
+    ol li {
+      margin: 15px 0;
+      color: #444;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📷 CameraX em Java - Guia Completo Passo a Passo</h1>
+    </header>
+
+    <div class="slide-wrapper">
+      <!-- SLIDE 1: Introdução -->
+      <section class="slide active">
+        <h1>Objetivos da Aula</h1>
+        
+        <div class="step-box">
+          <h3>O que vamos aprender?</h3>
+          <ul>
+            <li>Implementar <span class="highlight">Preview</span> da câmera e testar ✅</li>
+            <li>Adicionar <span class="highlight">Captura de Foto</span> e testar ✅</li>
+            <li>Adicionar <span class="highlight">Gravação de Vídeo</span> e testar ✅</li>
+          </ul>
+        </div>
+
+        <h2><span class="icon">💡</span>Conceitos Importantes</h2>
+        
+        <div class="flow-diagram">
+          <div class="flow-item">
+            <strong>Preview</strong><br>
+            📺 Visualizar câmera
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <strong>ImageCapture</strong><br>
+            📸 Tirar fotos
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <strong>VideoCapture</strong><br>
+            🎥 Gravar vídeos
+          </div>
+        </div>
+
+        <div class="info-box">
+          <strong>🔑 Use Cases:</strong> CameraX trabalha com "use cases" que são vinculados ao ciclo de vida da Activity através do <code>bindToLifecycle()</code>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Preparação -->
+      <section class="slide">
+        <h1>⚙️ Passo 0 - Preparação do Projeto</h1>
+        
+        <h2><span class="icon">1</span>Dependências</h2>
+        <div class="filename">📄 build.gradle (Module: app)</div>
+        <pre><code class="language-gradle">def camerax_version = "1.5.1"
+
+        implementation "androidx.camera:camera-core:${camerax_version}"
+        implementation "androidx.camera:camera-camera2:${camerax_version}"
+        implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+        implementation "androidx.camera:camera-view:${camerax_version}"
+        implementation "androidx.camera:camera-video:${camerax_version}"</code></pre>
+
+        <h2><span class="icon">2</span>Permissões</h2>
+        <div class="filename">📄 AndroidManifest.xml</div>
+        <pre><code class="language-xml">&lt;uses-permission android:name="android.permission.CAMERA" /&gt;
+&lt;uses-permission android:name="android.permission.RECORD_AUDIO" /&gt;</code></pre>
+
+        <h2><span class="icon">3</span>Criar Activity</h2>
+        <div class="step-box">
+          <ul>
+            <li>Criar uma <strong>Empty Activity</strong> chamada <span class="badge">CameraActivity</span></li>
+            <li>Sincronizar o projeto com Gradle</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: Layout Preview -->
+      <section class="slide">
+        <h1>🎨 Passo 1 - Layout para Preview</h1>
+        
+        <h2><span class="icon">📐</span>Criar o Layout</h2>
+        <div class="filename">📄 res/layout/activity_camera.xml</div>
+        <pre><code class="language-xml">&lt;androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"&gt;
+
+    &lt;androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" /&gt;
+
+&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</code></pre>
+
+        <div class="info-box">
+          <strong>💡 Importante:</strong> O <code>PreviewView</code> é o componente onde a câmera irá renderizar a imagem em tempo real.
+        </div>
+      </section>
+
+      <!-- SLIDE 4: Código Preview - Parte 1 -->
+      <section class="slide">
+        <h1>💻 Passo 2 - Código Java para Preview (1/2)</h1>
+        
+        <h2><span class="icon">1</span>Declarar Campos na Activity</h2>
+        <div class="filename">📄 CameraActivity.java</div>
+        <pre><code class="language-java">public class CameraActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE_PERMISSIONS = 10;
+    private static final String[] REQUIRED_PERMISSIONS = new String[]{
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
+    };
+
+    private PreviewView viewFinder;
+}</code></pre>
+
+        <h2><span class="icon">2</span>Método onCreate()</h2>
+        <pre><code class="language-java">@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_camera);
+
+    viewFinder = findViewById(R.id.viewFinder);
+
+    if (allPermissionsGranted()) {
+        startCamera();
+    } else {
+        ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+    }
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 5: Código Preview - Parte 2 -->
+      <section class="slide">
+        <h1>💻 Passo 2 - Código Java para Preview (2/2)</h1>
+        
+        <h2><span class="icon">3</span>Verificar Permissões</h2>
+        <pre><code class="language-java">private boolean allPermissionsGranted() {
+    for (String permission : REQUIRED_PERMISSIONS) {
+        if (ContextCompat.checkSelfPermission(
+                this, permission) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+    }
+    return true;
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, 
+        @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (requestCode == REQUEST_CODE_PERMISSIONS) {
+        if (allPermissionsGranted()) {
+            startCamera();
+        } else {
+            Toast.makeText(this, "Permissões negadas", 
+                    Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 6: startCamera Preview -->
+      <section class="slide">
+        <h1>🚀 Passo 3 - Implementar startCamera()</h1>
+        
+        <h2><span class="icon">📹</span>Inicializar Preview</h2>
+        <pre><code class="language-java">private void startCamera() {
+    ListenableFuture&lt;ProcessCameraProvider&gt; cameraProviderFuture =
+            ProcessCameraProvider.getInstance(this);
+
+    cameraProviderFuture.addListener(() -> {
+        try {
+            ProcessCameraProvider cameraProvider = 
+                    cameraProviderFuture.get();
+
+            // Selecionar câmera traseira
+            CameraSelector cameraSelector = 
+                    CameraSelector.DEFAULT_BACK_CAMERA;
+
+            // Criar Preview
+            Preview preview = new Preview.Builder().build();
+            preview.setSurfaceProvider(
+                    viewFinder.getSurfaceProvider());
+
+            // Desvincular tudo antes de vincular novos use cases
+            cameraProvider.unbindAll();
+            
+            // Vincular Preview ao lifecycle
+            cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview);
+
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }, ContextCompat.getMainExecutor(this));
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 7: Teste Preview -->
+      <section class="slide">
+        <h1>✅ Teste 1 - Verificar Preview</h1>
+        
+        <div class="success-box">
+          <h3>Checklist de Validação</h3>
+          <ul class="checklist">
+            <li>Projeto compila sem erros</li>
+            <li>App solicita permissões ao iniciar</li>
+            <li>Preview da câmera aparece na tela</li>
+            <li>Imagem acompanha movimentos em tempo real</li>
+          </ul>
+        </div>
+
+        <h2><span class="icon">📱</span>Como Testar</h2>
+        <ol>
+          <li>Execute o app em um <strong>dispositivo físico ou virtual Android</strong></li>
+          <li>Conceda as permissões de Câmera e Áudio</li>
+          <li>Verifique se o preview está funcionando</li>
+          <li>Movimente o dispositivo e observe a atualização em tempo real</li>
+        </ol>
+
+        <div class="warning-box">
+          <strong>⚠️ Atenção:</strong> Teste sempre em dispositivo físico. O emulador pode não funcionar corretamente com a câmera.
+        </div>
+
+        <div class="info-box">
+          <strong>✨ Tudo funcionando?</strong> Prossiga para adicionar a captura de foto!
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Adicionar Foto - Layout -->
+      <section class="slide">
+        <h1>📸 Passo 4 - Adicionar Captura de Foto</h1>
+        
+        <h2><span class="icon">1</span>Atualizar Layout</h2>
+        <div class="filename">📄 activity_camera.xml</div>
+        <pre><code class="language-xml">&lt;androidx.camera.view.PreviewView
+    android:id="@+id/viewFinder"
+    ... /&gt;
+
+&lt;Button
+    android:id="@+id/btnTakePhoto"
+    android:text="📸 Tirar Foto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent" /&gt;</code></pre>
+
+        <h2><span class="icon">2</span>Adicionar Campo ImageCapture</h2>
+        <pre><code class="language-java">private ImageCapture imageCapture;</code></pre>
+
+        <h2><span class="icon">3</span>Configurar Botão no onCreate()</h2>
+        <pre><code class="language-java">Button btnTakePhoto = findViewById(R.id.btnTakePhoto);
+btnTakePhoto.setOnClickListener(v -> takePhoto());</code></pre>
+      </section>
+
+      <!-- SLIDE 9: ImageCapture -->
+      <section class="slide">
+        <h1>🔧 Passo 5 - Configurar ImageCapture</h1>
+        
+        <h2><span class="icon">📌</span>Atualizar startCamera()</h2>
+        <div class="warning-box">
+          <strong>Adicione estas linhas ao método startCamera()</strong>
+        </div>
+        
+        <pre><code class="language-java">private void startCamera() {
+    // ... código anterior ...
+    
+    Preview preview = new Preview.Builder().build();
+    preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
+
+    // NOVO: Criar ImageCapture
+    imageCapture = new ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .build();
+
+    cameraProvider.unbindAll();
+    
+    // NOVO: Vincular Preview E ImageCapture
+    cameraProvider.bindToLifecycle(
+            this,
+            cameraSelector,
+            preview,
+            imageCapture  // ← Adicione este parâmetro
+    );
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 10: Método takePhoto -->
+      <section class="slide">
+        <h1>📷 Passo 6 - Implementar takePhoto()</h1>
+        
+        <pre><code class="language-java">private void takePhoto() {
+    if (imageCapture == null) return;
+
+    // Definir diretório de saída
+    File outputDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    if (outputDir == null) {
+        outputDir = getFilesDir();
+    }
+
+    // Criar nome único para o arquivo
+    String fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
+    File photoFile = new File(outputDir, fileName);
+
+    // Configurar opções de saída
+    ImageCapture.OutputFileOptions outputOptions =
+            new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+
+    // Capturar foto
+    imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            new ImageCapture.OnImageSavedCallback() {
+                @Override
+                public void onImageSaved(
+                        @NonNull ImageCapture.OutputFileResults results) {
+                    Toast.makeText(CameraActivity.this,
+                            "✅ Foto salva: " + photoFile.getAbsolutePath(),
+                            Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onError(
+                        @NonNull ImageCaptureException exception) {
+                    Toast.makeText(CameraActivity.this,
+                            "❌ Erro ao tirar foto",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 11: Teste Foto -->
+      <section class="slide">
+        <h1>✅ Teste 2 - Verificar Captura de Foto</h1>
+        
+        <div class="success-box">
+          <h3>Checklist de Validação</h3>
+          <ul class="checklist">
+            <li>Preview continua funcionando normalmente</li>
+            <li>Botão "Tirar Foto" está visível</li>
+            <li>Toast aparece com o caminho do arquivo</li>
+            <li>Arquivo é criado com sucesso</li>
+          </ul>
+        </div>
+
+        <h2><span class="icon">📱</span>Como Testar</h2>
+        <ol>
+          <li>Aponte a câmera para um objeto ou pessoa</li>
+          <li>Clique no botão <strong>"Tirar Foto"</strong></li>
+          <li>Observe o Toast com o caminho do arquivo</li>
+          <li>Abra o <strong>Device Explorer</strong> no Android Studio</li>
+          <li>Navegue até <code>/storage/emulated/0/Android/data/[seu.pacote]/files/Pictures/</code></li>
+          <li>Verifique se a foto foi salva</li>
+        </ol>
+
+        <div class="info-box">
+          <strong>🎉 Foto salva com sucesso?</strong> Agora vamos adicionar gravação de vídeo!
+        </div>
+      </section>
+
+      <!-- SLIDE 12: Adicionar Vídeo - Layout -->
+      <section class="slide">
+        <h1>🎥 Passo 7 - Preparar Gravação de Vídeo</h1>
+        
+        <h2><span class="icon">1</span>Atualizar Layout</h2>
+        <div class="filename">📄 activity_camera.xml</div>
+        <pre><code class="language-xml">&lt;Button
+    android:id="@+id/btnStartStopVideo"
+    android:text="🎥 Gravar Vídeo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" /&gt;</code></pre>
+
+        <h2><span class="icon">2</span>Adicionar Campos para Vídeo</h2>
+        <pre><code class="language-java">private VideoCapture&lt;Recorder&gt; videoCapture;
+private Recording currentRecording;</code></pre>
+
+        <h2><span class="icon">3</span>Configurar Botão no onCreate()</h2>
+        <pre><code class="language-java">Button btnVideo = findViewById(R.id.btnStartStopVideo);
+btnVideo.setOnClickListener(v -> {
+    if (currentRecording == null) {
+        startVideoRecording();
+        btnVideo.setText("⏹️ Parar Vídeo");
+    } else {
+        stopVideoRecording();
+        btnVideo.setText("🎥 Gravar Vídeo");
+    }
+});</code></pre>
+      </section>
+
+      <!-- SLIDE 13: VideoCapture -->
+      <section class="slide">
+        <h1>🔧 Passo 8 - Configurar VideoCapture</h1>
+        
+        <h2><span class="icon">📌</span>Atualizar startCamera()</h2>
+        <pre><code class="language-java">private void startCamera() {
+    // ... código anterior ...
+    
+    Preview preview = new Preview.Builder().build();
+    preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
+
+    imageCapture = new ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .build();
+
+    // NOVO: Criar Recorder e VideoCapture
+    QualitySelector qualitySelector = 
+            QualitySelector.from(Quality.HD);
+
+    Recorder recorder = new Recorder.Builder()
+            .setQualitySelector(qualitySelector)
+            .build();
+
+    videoCapture = VideoCapture.withOutput(recorder);
+
+    cameraProvider.unbindAll();
+    
+    // NOVO: Vincular os 3 use cases
+    cameraProvider.bindToLifecycle(
+            this,
+            cameraSelector,
+            preview,
+            imageCapture,
+            videoCapture  // ← Adicione este parâmetro
+    );
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 14: startVideoRecording -->
+      <section class="slide">
+        <h1>🎬 Passo 9 - Implementar startVideoRecording()</h1>
+        
+        <pre><code class="language-java">private void startVideoRecording() {
+    if (videoCapture == null) return;
+
+    // Definir diretório de saída
+    File outputDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+    if (outputDir == null) {
+        outputDir = getFilesDir();
+    }
+
+    // Criar nome único para o arquivo
+    String fileName = "VID_" + System.currentTimeMillis() + ".mp4";
+    File videoFile = new File(outputDir, fileName);
+
+    // Configurar opções de saída
+    FileOutputOptions fileOutputOptions =
+            new FileOutputOptions.Builder(videoFile).build();
+
+    // Iniciar gravação
+    currentRecording = videoCapture.getOutput()
+            .prepareRecording(this, fileOutputOptions)
+            .withAudioEnabled()  // Habilitar áudio
+            .start(ContextCompat.getMainExecutor(this),
+                    videoRecordEvent -> {
+                        if (videoRecordEvent instanceof VideoRecordEvent.Start) {
+                            Toast.makeText(this,
+                                    "🔴 Gravação iniciada",
+                                    Toast.LENGTH_SHORT).show();
+                        } else if (videoRecordEvent instanceof 
+                                VideoRecordEvent.Finalize) {
+                            VideoRecordEvent.Finalize finalizeEvent = 
+                                    (VideoRecordEvent.Finalize) videoRecordEvent;
+                            if (!finalizeEvent.hasError()) {
+                                Toast.makeText(this,
+                                        "✅ Vídeo salvo: " + 
+                                        videoFile.getAbsolutePath(),
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(this,
+                                        "❌ Erro ao gravar vídeo",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            currentRecording = null;
+                        }
+                    });
+}</code></pre>
+      </section>
+
+      <!-- SLIDE 15: stopVideoRecording -->
+      <section class="slide">
+        <h1>⏹️ Passo 10 - Implementar stopVideoRecording()</h1>
+        
+        <pre><code class="language-java">private void stopVideoRecording() {
+    if (currentRecording != null) {
+        currentRecording.stop();
+        currentRecording = null;
+    }
+}</code></pre>
+
+        <div class="info-box">
+          <strong>💡 Simples assim!</strong> O método <code>stop()</code> finaliza a gravação e dispara o evento <code>VideoRecordEvent.Finalize</code> que definimos anteriormente.
+        </div>
+
+        <div class="step-box">
+          <h3>Imports Necessários</h3>
+          <p>Certifique-se de ter todos os imports:</p>
+          <pre><code class="language-java">import androidx.camera.video.*;
+import androidx.core.content.ContextCompat;
+import android.os.Environment;
+import java.io.File;</code></pre>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: Teste Vídeo -->
+      <section class="slide">
+        <h1>✅ Teste 3 - Verificar Gravação de Vídeo</h1>
+        
+        <div class="success-box">
+          <h3>Checklist de Validação</h3>
+          <ul class="checklist">
+            <li>Preview funcionando normalmente</li>
+            <li>Botão "Tirar Foto" continua salvando imagens</li>
+            <li>Botão "Gravar Vídeo" inicia gravação</li>
+            <li>Toast "Gravação iniciada" aparece</li>
+            <li>Botão muda para "Parar Vídeo"</li>
+            <li>Ao clicar novamente, vídeo é salvo</li>
+            <li>Toast mostra caminho do arquivo</li>
+          </ul>
+        </div>
+
+        <h2><span class="icon">📱</span>Como Testar</h2>
+        <ol>
+          <li>Clique em <strong>"Gravar Vídeo"</strong></li>
+          <li>Movimente o dispositivo</li>
+          <li>Fale algo para testar o áudio</li>
+          <li>Clique em <strong>"Parar Vídeo"</strong></li>
+          <li>Abra o <strong>Device Explorer</strong></li>
+          <li>Navegue até <code>/storage/emulated/0/Android/data/[seu.pacote]/files/Movies/</code></li>
+          <li>Localize o arquivo <code>.mp4</code></li>
+          <li>Faça download e reproduza no seu computador</li>
+          <li>Verifique se há imagem E áudio</li>
+        </ol>
+      </section>
+
+      <!-- SLIDE 17: Conclusão -->
+      <section class="slide">
+        <h1>🎉 Parabéns! Implementação Completa</h1>
+        
+        <div class="success-box">
+          <h3>✨ O que você implementou:</h3>
+          <ul class="checklist">
+            <li>Preview em tempo real com CameraX</li>
+            <li>Captura de fotos com ImageCapture</li>
+            <li>Gravação de vídeo com áudio usando VideoCapture</li>
+            <li>Gerenciamento de permissões</li>
+            <li>Salvamento de arquivos</li>
+          </ul>
+        </div>
+
+        <h2><span class="icon">🚀</span>Próximos Passos</h2>
+        <div class="step-box">
+          <ul>
+            <li>🔄 Adicionar troca entre câmera frontal e traseira</li>
+            <li>🔍 Implementar zoom digital</li>
+            <li>💡 Adicionar controle de flash</li>
+            <li>⚙️ Configurar resolução e qualidade</li>
+            <li>🎨 Adicionar filtros e efeitos</li>
+            <li>📊 Implementar análise de imagem em tempo real</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <strong>📚 Documentação Oficial:</strong> 
+          <a href="https://developer.android.com/training/camerax" target="_blank" style="color: #0c5460; font-weight: 600;">
+            developer.android.com/training/camerax
+          </a>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="navigation">
+      <button id="btnPrev">← Anterior</button>
+      <div class="page-counter">
+        <span id="current">1</span> / <span id="total">17</span>
+      </div>
+      <button id="btnNext">Próximo →</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-xml-doc.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-gradle.min.js"></script>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const currentSpan = document.getElementById('current');
+    const totalSpan = document.getElementById('total');
+    
+    let currentSlide = 0;
+    totalSpan.textContent = slides.length;
+
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentSlide);
+      });
+      
+      btnPrev.disabled = currentSlide === 0;
+      btnNext.disabled = currentSlide === slides.length - 1;
+      currentSpan.textContent = currentSlide + 1;
+      
+      // Scroll to top
+      document.querySelector('.slide-wrapper').scrollTop = 0;
+    }
+
+    btnPrev.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlides();
+      }
+    });
+
+    btnNext.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlides();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        btnNext.click();
+      } else if (e.key === 'ArrowLeft') {
+        btnPrev.click();
+      }
+    });
+
+    updateSlides();
+  </script>
+</body>
+</html>
