@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         //Recuperando dados datasourse
         PlanetaController planetaController = new PlanetaController();
 
-        ArrayList<> adaptador = new ArrayAdapter<>(this, )
+        AdapterPlaneta adaptador = new AdapterPlaneta(getApplicationContext(),R.layout.item,planetaController.listaPlanetas());
 
-        lv.setAdapter(adaptador);
+       lv.setAdapter(adaptador);
 
     }
 }
