@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    actor Usuario as Usuário
+    participant ButtonCapture as buttonCapture
+    participant MainActivity
+    participant ImageCapture as imageCapture
+    participant Executor as cameraExecutor
+    participant Callback as OnImageSavedCallback
+    participant BitmapFactory
+    participant Thumbnail as imageThumbnail
+    participant Toast
+
+    Usuario->>ButtonCapture: Clica em "Tirar foto"
+    ButtonCapture->>MainActivity: OnClickListener: takePhoto()
+
+    MainActivity->>MainActivity: takePhoto()
+
+    alt imageCapture == null
+        MainActivity-->>ButtonCapture: return
+    else imageCapture disponível
+        MainActivity->>MainActivity: outputDir = new File(getFilesDir(), "photos")
+
+        alt outputDir não existe
+            MainActivity->>MainActivity: outputDir.mkdirs()
+        end
+
+        MainActivity->>MainActivity: fileName = timestamp + ".jpg"
+        MainActivity->>MainActivity: photoFile = new File(outputDir, fileName)
+        MainActivity->>MainActivity: outputOptions = new OutputFileOptions.Builder(photoFile).build()
+
+        MainActivity->>ImageCapture: takePicture(outputOptions, cameraExecutor, callback)
+
+        alt Foto salva com sucesso
+            ImageCapture->>Executor: Executa captura/salvamento
+            Executor->>Callback: onImageSaved(outputFileResults)
+            Callback->>MainActivity: runOnUiThread(...)
+
+            MainActivity->>MainActivity: lastPhotoFile = photoFile
+            MainActivity->>MainActivity: updateThumbnail(photoFile)
+
+            MainActivity->>BitmapFactory: decodeFile(photoFile.getAbsolutePath())
+            BitmapFactory-->>MainActivity: bitmap
+            MainActivity->>Thumbnail: setImageBitmap(bitmap)
+
+            MainActivity->>Toast: makeText(..., R.string.photo_saved, ...)
+            Toast-->>Usuario: "Foto salva com sucesso."
+        else Erro ao capturar/salvar
+            ImageCapture->>Executor: Executa captura/salvamento
+            Executor->>Callback: onError(exception)
+            Callback->>MainActivity: runOnUiThread(...)
+            MainActivity->>Toast: makeText(..., R.string.photo_error, ...)
+            Toast-->>Usuario: "Erro ao capturar foto."
+        end
+    end
