@@ -52,21 +52,82 @@ Arquivo alterado:
 Arquivo alterado:
 - `app/src/main/res/layout/activity_main.xml`
 
-## Passo 4 - MainActivity com CameraX
+## Passo 4 - MainActivity com CameraX (quebrado em subpassos)
 
-**O que foi feito:**
-- Solicitacao de permissao em runtime com `ActivityResultLauncher`.
-- Inicializacao do `ProcessCameraProvider`.
-- Implementacao dos use cases:
-  - `Preview` para video ao vivo.
-  - `ImageCapture` para tirar foto.
-- Troca de camera (frontal/traseira) com rebind dos use cases.
-- Salvamento da foto em `getFilesDir()/photos`.
-- Atualizacao da miniatura apos captura.
-- Clique na miniatura abrindo a `PhotoPreviewActivity`.
+### Passo 4.1 - Preparar componentes da tela e executor
+
+**O que implementar:**
+- Referencias de `PreviewView`, botoes e `ImageView` de miniatura.
+- `ExecutorService` para captura em background.
 
 **Para que serve:**
-- Demonstrar o fluxo real de CameraX do inicio ao fim, com responsabilidade separada por metodo.
+- Garantir que UI e processamento de camera fiquem organizados desde o inicio.
+
+### Passo 4.2 - Definir estado da camera e variaveis principais
+
+**O que implementar:**
+- `CameraSelector` inicial (traseira).
+- Referencias de `ImageCapture`, `ProcessCameraProvider` e `lastPhotoFile`.
+
+**Para que serve:**
+- Centralizar o estado do fluxo CameraX e evitar logica espalhada.
+
+### Passo 4.3 - Tratar permissao em runtime
+
+**O que implementar:**
+- `ActivityResultLauncher<String>` para permissao de camera.
+- Metodo `checkCameraPermissionAndStart()`.
+
+**Para que serve:**
+- Ensinar o pre-requisito obrigatorio antes de abrir o preview.
+
+### Passo 4.4 - Iniciar o provider da camera
+
+**O que implementar:**
+- Metodo `startCamera()` com `ProcessCameraProvider.getInstance(this)`.
+- Listener no executor principal para recuperar o provider.
+
+**Para que serve:**
+- Mostrar onde CameraX conecta com o ciclo de vida da activity.
+
+### Passo 4.5 - Bind dos use cases (Preview + ImageCapture)
+
+**O que implementar:**
+- Metodo `bindUseCases(ProcessCameraProvider cameraProvider)`.
+- Criar `Preview`, definir `setSurfaceProvider(previewView.getSurfaceProvider())`.
+- Criar `ImageCapture` e chamar `bindToLifecycle(...)`.
+
+**Para que serve:**
+- Explicar o coracao do CameraX: quais casos de uso estao ativos e como ficam ligados a tela.
+
+### Passo 4.6 - Capturar foto e salvar arquivo local
+
+**O que implementar:**
+- Metodo `takePhoto()`.
+- Criar pasta `getFilesDir()/photos`.
+- Gerar nome com timestamp e usar `ImageCapture.OutputFileOptions`.
+- No callback de sucesso: atualizar `lastPhotoFile`, miniatura e feedback.
+
+**Para que serve:**
+- Demonstrar captura real e persistencia simples sem permissao extra de armazenamento.
+
+### Passo 4.7 - Trocar camera frontal/traseira
+
+**O que implementar:**
+- Metodo `switchCamera()` alternando `CameraSelector`.
+- Rebind chamando `bindUseCases(...)` novamente.
+
+**Para que serve:**
+- Ensinar que trocar lente exige rebinding dos use cases.
+
+### Passo 4.8 - Abrir foto pela miniatura
+
+**O que implementar:**
+- Metodo `openLastPhoto()` com validacao de arquivo.
+- `Intent` para `PhotoPreviewActivity` com `Uri` da foto.
+
+**Para que serve:**
+- Fechar o fluxo completo: capturar -> mostrar miniatura -> navegar para visualizacao.
 
 Arquivo alterado:
 - `app/src/main/java/com/ifsc/contaclicks/MainActivity.java`
