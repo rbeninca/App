@@ -1,8 +1,10 @@
 package com.ifsc.contaclicks;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -107,15 +109,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void updateThumbnail(File photoFile) {
-        Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-        imageThumbnail.setImageBitmap(bitmap);
-    }
     private void switchCamera() {
         cameraSelector = cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
                 ? CameraSelector.DEFAULT_FRONT_CAMERA
                 : CameraSelector.DEFAULT_BACK_CAMERA;
-
         if (cameraProviderFuture != null) {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
@@ -125,7 +122,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    private void updateThumbnail(File photoFile) {
+        Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+        imageThumbnail.setImageBitmap(bitmap);
+    }
     private void openLastPhoto() {
+        if (lastPhotoFile == null || !lastPhotoFile.exists()) {
+            Toast.makeText(this, R.string.no_photo_yet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, PhotoPreviewActivity.class);
+        intent.setData(Uri.fromFile(lastPhotoFile));
+        startActivity(intent);
     }
     @Override
     protected void onDestroy() {
