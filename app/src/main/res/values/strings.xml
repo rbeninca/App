@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">Count Click</string>
-    <string name="ola">Hello</string>
-    <string name="click">Click</string>
+    <string name="app_name">CameraX Didatico</string>
+    <string name="switch_camera">Trocar</string>
+    <string name="capture">Tirar foto</string>
+    <string name="thumbnail">Miniatura da ultima foto</string>
+    <string name="photo_preview">Visualizacao da foto</string>
+    <string name="camera_permission_needed">Permissao da camera e obrigatoria para usar o app.</string>
+    <string name="photo_saved">Foto salva com sucesso.</string>
+    <string name="photo_error">Erro ao capturar foto.</string>
+    <string name="no_photo_yet">Nenhuma foto para abrir ainda.</string>
 </resources>
