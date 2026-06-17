@@ -132,29 +132,74 @@ Arquivo alterado:
 Arquivo alterado:
 - `app/src/main/java/com/ifsc/contaclicks/MainActivity.java`
 
-## Passo 5 - Activity de preview da foto
+## Passo 5 - Activity de preview da foto (quebrado em subpassos)
 
-**O que foi feito:**
-- Criada `PhotoPreviewActivity`.
-- Criado layout dedicado com `ImageView` em tela cheia.
-- Recebe `Uri` da foto via `Intent` e renderiza o arquivo.
+### Passo 5.1 - Criar layout da tela de visualizacao
+
+**O que implementar:**
+- Arquivo `activity_photo_preview.xml` com `ImageView` ocupando a tela.
 
 **Para que serve:**
-- Ensinar navegacao entre telas e exibicao da imagem capturada.
+- Preparar uma tela simples e focada apenas em mostrar a foto capturada.
 
-Arquivos criados:
-- `app/src/main/java/com/ifsc/contaclicks/PhotoPreviewActivity.java`
+### Passo 5.2 - Criar `PhotoPreviewActivity`
+
+**O que implementar:**
+- Classe `PhotoPreviewActivity` estendendo `AppCompatActivity`.
+- `setContentView(R.layout.activity_photo_preview)` no `onCreate`.
+
+**Para que serve:**
+- Separar responsabilidade: `MainActivity` captura, `PhotoPreviewActivity` exibe.
+
+### Passo 5.3 - Receber `Uri` e validar dados
+
+**O que implementar:**
+- Ler `Uri` vindo do `Intent`.
+- Validar `Uri` e `path`; se invalido, encerrar activity com `finish()`.
+
+**Para que serve:**
+- Ensinar validacao basica para evitar tela quebrada por dado ausente.
+
+### Passo 5.4 - Decodificar e renderizar bitmap
+
+**O que implementar:**
+- Converter caminho em `File`.
+- Decodificar com `BitmapFactory.decodeFile(...)` e setar no `ImageView`.
+
+**Para que serve:**
+- Concluir o fluxo de visualizacao da foto em outra tela.
+
+Arquivos desse passo:
 - `app/src/main/res/layout/activity_photo_preview.xml`
+- `app/src/main/java/com/ifsc/contaclicks/PhotoPreviewActivity.java`
 
-## Passo 6 - Strings e finalizacao
+## Passo 6 - Strings e finalizacao (quebrado em subpassos)
 
-**O que foi feito:**
-- Atualizados textos de interface e mensagens de feedback (captura/permissao/erros).
+### Passo 6.1 - Revisar textos dos botoes
+
+**O que implementar:**
+- Strings para `Trocar` e `Tirar foto`.
 
 **Para que serve:**
-- Melhorar clareza para os alunos durante os testes do app.
+- Deixar as acoes da interface claras para o aluno durante o teste.
 
-Arquivo alterado:
+### Passo 6.2 - Revisar descricoes de acessibilidade
+
+**O que implementar:**
+- Strings para miniatura e preview da foto.
+
+**Para que serve:**
+- Melhorar legibilidade e boas praticas de UI.
+
+### Passo 6.3 - Padronizar mensagens de feedback
+
+**O que implementar:**
+- Mensagens de permissao obrigatoria, foto salva, erro na captura e ausencia de foto.
+
+**Para que serve:**
+- Facilitar entendimento do fluxo quando algo da certo ou falha.
+
+Arquivo desse passo:
 - `app/src/main/res/values/strings.xml`
 
 ## Como executar
