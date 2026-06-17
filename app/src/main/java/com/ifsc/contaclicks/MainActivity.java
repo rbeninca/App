@@ -112,6 +112,18 @@ public class MainActivity extends AppCompatActivity {
         imageThumbnail.setImageBitmap(bitmap);
     }
     private void switchCamera() {
+        cameraSelector = cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA
+                ? CameraSelector.DEFAULT_FRONT_CAMERA
+                : CameraSelector.DEFAULT_BACK_CAMERA;
+
+        if (cameraProviderFuture != null) {
+            try {
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                bindUseCases(cameraProvider);
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.photo_error, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     private void openLastPhoto() {
     }
