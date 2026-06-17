@@ -1,6 +1,8 @@
 package com.ifsc.contaclicks;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,12 +12,15 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
@@ -70,13 +75,41 @@ public class MainActivity extends AppCompatActivity {
     private void bindUseCases(ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder().build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
-
         imageCapture = new ImageCapture.Builder().build();
-
         cameraProvider.unbindAll();
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
     }
     private void takePhoto() {
+        if (imageCapture == null) {
+            return;
+        }
+        File outputDir = new File(getFilesDir(), "photos");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+        String fileName = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+                .format(System.currentTimeMillis()) + ".jpg";
+        File photoFile = new File(outputDir, fileName);
+        ImageCapture.OutputFileOptions outputOptions =
+                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+        imageCapture.takePicture(outputOptions, cameraExecutor, new ImageCapture.OnImageSavedCallback() {
+            @Override
+            public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
+                runOnUiThread(() -> {
+                    lastPhotoFile = photoFile;
+                    updateThumbnail(photoFile);
+                    Toast.makeText(MainActivity.this, R.string.photo_saved, Toast.LENGTH_SHORT).show();
+                });
+            }
+            @Override
+            public void onError(ImageCaptureException exception) {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.photo_error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+    private void updateThumbnail(File photoFile) {
+        Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+        imageThumbnail.setImageBitmap(bitmap);
     }
     private void switchCamera() {
     }
