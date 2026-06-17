@@ -1,36 +1,40 @@
 package com.ifsc.contaclicks;
-
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-
-import androidx.activity.EdgeToEdge;
+import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
+import androidx.camera.view.PreviewView;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
-    int i=0;
-
+    private PreviewView previewView;
+    private ImageView imageThumbnail;
+    private ExecutorService cameraExecutor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Associando objeto interface a variavel local;
-        TextView tv=findViewById(R.id.textView);
-        tv.setText(getString(R.string.app_name));
-        Button b=findViewById(R.id.button);
-        b.setOnClickListener(v -> {//Seu codigo lindo aqui
-        });
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tv.setText( Integer.toString(i)  );
-                i++;
-            }
-        });
-
+        previewView = findViewById(R.id.previewView);
+        imageThumbnail = findViewById(R.id.imageThumbnail);
+        Button buttonCapture = findViewById(R.id.buttonCapture);
+        Button buttonSwitchCamera = findViewById(R.id.buttonSwitchCamera);
+        cameraExecutor = Executors.newSingleThreadExecutor();
+        buttonCapture.setOnClickListener(v -> takePhoto());
+        buttonSwitchCamera.setOnClickListener(v -> switchCamera());
+        imageThumbnail.setOnClickListener(v -> openLastPhoto());
+        checkCameraPermissionAndStart();
+    }
+    private void checkCameraPermissionAndStart() {
+    }
+    private void takePhoto() {
+    }
+    private void switchCamera() {
+    }
+    private void openLastPhoto() {
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cameraExecutor.shutdown();
     }
 }
